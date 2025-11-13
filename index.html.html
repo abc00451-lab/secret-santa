@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>聖誕交換禮物抽籤（保密版）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #ffecd2 0, #fcb69f 18%, #134e5e 55%, #071b26 100%);
+      color: #fff;
+      overflow: hidden;
+      padding: 16px;
+    }
+
+    .snow-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .snowflake {
+      position: absolute;
+      top: -10px;
+      font-size: 12px;
+      opacity: 0.8;
+      animation-name: snow;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+
+    @keyframes snow {
+      0% {
+        transform: translateY(-10px) translateX(0);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(110vh) translateX(20px);
+        opacity: 0.1;
+      }
+    }
+
+    .card {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 560px;
+      padding: 24px 20px 26px;
+      border-radius: 24px;
+      background: rgba(15, 32, 39, 0.85);
+      backdrop-filter: blur(12px);
+      box-shadow:
+        0 18px 40px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .wreath {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: 3px solid #f8e9a1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 30%, #46b27d, #0b3b2e);
+      position: relative;
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.25);
+    }
+
+    .wreath::before {
+      content: "🎁";
+      font-size: 22px;
+    }
+
+    .wreath::after {
+      content: "🎀";
+      position: absolute;
+      top: -16px;
+      font-size: 18px;
+    }
+
+    .title-block h1 {
+      font-size: 20px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fef6e4;
+    }
+
+    .title-block p {
+      font-size: 13px;
+      color: #f4d4c4;
+      margin-top: 4px;
+    }
+
+    label {
+      font-size: 13px;
+      color: #ffe4c7;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    textarea {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(3, 19, 31, 0.85);
+      color: #fff;
+      padding: 10px 12px;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 100px;
+      outline: none;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+    }
+
+    textarea::placeholder {
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    .hint {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #ffdede;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .count {
+      font-size: 12px;
+      color: #ffe4c7;
+      opacity: 0.9;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff4b5c, #ff9a62);
+      color: #fff;
+      box-shadow: 0 5px 16px rgba(255, 78, 94, 0.6);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 7px 22px rgba(255, 78, 94, 0.8);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffe4c7;
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.17);
+      transform: translateY(-1px);
+    }
+
+    .message {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #ffe4c7;
+      min-height: 16px;
+    }
+
+    .message.error {
+      color: #ffb3b3;
+    }
+
+    .result-block {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.25);
+      max-height: 260px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .result-block h2 {
+      font-size: 14px;
+      color: #ffe9cd;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .link-list {
+      list-style: none;
+    }
+
+    .link-item {
+      border-radius: 10px;
+      padding: 7px 10px;
+      margin-bottom: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 238, 211, 0.13);
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .link-name {
+      font-weight: 600;
+      color: #ffe9cd;
+    }
+
+    .link-url {
+      word-break: break-all;
+      font-size: 11px;
+      color: #ffd4e0;
+    }
+
+    .small {
+      font-size: 11px;
+      color: rgba(255, 245, 230, 0.7);
+      margin-top: 4px;
+    }
+
+    .footer {
+      margin-top: 10px;
+      font-size: 11px;
+      color: rgba(255, 245, 230, 0.7);
+      text-align: right;
+    }
+
+    /* 參加者模式樣式 */
+    .center {
+      text-align: center;
+    }
+
+    .big-name {
+      font-size: 22px;
+      font-weight: 700;
+      margin-top: 8px;
+      color: #ffe9cd;
+    }
+
+    .target-box {
+      margin-top: 16px;
+      padding: 14px 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .target-title {
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: #ffe4c7;
+    }
+
+    .target-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffd4e0;
+    }
+
+    .note {
+      margin-top: 8px;
+      font-size: 11px;
+      color: rgba(255, 245, 230, 0.8);
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 20px 16px 22px;
+        border-radius: 18px;
+      }
+      .title-block h1 {
+        font-size: 18px;
+      }
+      .wreath {
+        width: 40px;
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="snow-container" id="snow"></div>
+
+  <main class="card" id="adminView">
+    <header class="card-header">
+      <div class="wreath"></div>
+      <div class="title-block">
+        <h1>Secret Santa</h1>
+        <p>主辦人模式：輸入名單，一鍵產生每個人的專屬連結 🎄</p>
+      </div>
+    </header>
+
+    <section>
+      <label for="names">參加者名字（每行一個）：</label>
+      <textarea
+        id="names"
+        placeholder="例如：&#10;曼曼&#10;泰英&#10;芮&#10;彣&#10;冠&#10;昕"
+      ></textarea>
+      <p class="hint">⚠ 名字不可重複，且至少要 3 人比較好玩～</p>
+
+      <div class="toolbar">
+        <div class="count" id="count">目前 0 人參加</div>
+        <div class="button-row">
+          <button class="btn-secondary" type="button" id="demoBtn">填入示範名單</button>
+          <button class="btn-primary" type="button" id="drawBtn">
+            <span>🎄 抽籤並產生專屬網址</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="result-block" id="linkSection" style="display:none;">
+      <h2>每個人的專屬 Secret Santa 網址 🎅</h2>
+      <ul class="link-list" id="linkList"></ul>
+      <p class="small">把對應的網址一人一條貼給大家，他們就只能看到「自己要送給誰」唷！</p>
+    </section>
+
+    <div class="message" id="message"></div>
+
+    <div class="footer">
+      <span>Made with 🎄 & 🎁</span>
+    </div>
+  </main>
+
+  <!-- 參加者模式 -->
+  <main class="card" id="participantView" style="display:none;">
+    <header class="card-header">
+      <div class="wreath"></div>
+      <div class="title-block">
+        <h1>Secret Santa</h1>
+        <p>這是你的聖誕交換禮物任務 🎄</p>
+      </div>
+    </header>
+
+    <section class="center" id="participantContent">
+      <!-- 內容由 JS 填入 -->
+    </section>
+
+    <div class="footer">
+      <span>記得保密喔 🤫</span>
+    </div>
+  </main>
+
+  <script>
+    const snowContainer = document.getElementById("snow");
+    function createSnowflakes() {
+      const flakes = 60;
+      for (let i = 0; i < flakes; i++) {
+        const span = document.createElement("span");
+        span.className = "snowflake";
+        span.textContent = "❄";
+        const size = 10 + Math.random() * 10;
+        span.style.left = Math.random() * 100 + "vw";
+        span.style.fontSize = size + "px";
+        const duration = 8 + Math.random() * 10;
+        const delay = Math.random() * -duration;
+        span.style.animationDuration = duration + "s";
+        span.style.animationDelay = delay + "s";
+        snowContainer.appendChild(span);
+      }
+    }
+    createSnowflakes();
+
+    // 判斷是不是參加者模式（網址有 #token=）
+    function parseHash() {
+      if (!location.hash) return null;
+      const raw = location.hash.substring(1); // 去掉#
+      const parts = raw.split("&").map(p => p.split("="));
+      const obj = {};
+      for (const [k, v] of parts) {
+        if (k && v !== undefined) obj[k] = decodeURIComponent(v);
+      }
+      if (!obj.token || obj.id === undefined) return null;
+      return obj;
+    }
+
+    function encodeConfig(config) {
+      const json = JSON.stringify(config);
+      // 避免中文亂碼：先 encodeURIComponent 再 btoa
+      return btoa(encodeURIComponent(json));
+    }
+
+    function decodeConfig(token) {
+      const json = decodeURIComponent(atob(token));
+      return JSON.parse(json);
+    }
+
+    // 產生 derangement（保證沒有人抽到自己）
+    function makeDerangement(n) {
+      if (n < 2) return null;
+      const arr = Array.from({ length: n }, (_, i) => i);
+      for (let i = 0; i < n - 1; i++) {
+        const j = i + 1 + Math.floor(Math.random() * (n - i - 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      if (arr[n - 1] === n - 1) {
+        [arr[n - 1], arr[n - 2]] = [arr[n - 2], arr[n - 1]];
+      }
+      return arr;
+    }
+
+    const adminView = document.getElementById("adminView");
+    const participantView = document.getElementById("participantView");
+    const participantContent = document.getElementById("participantContent");
+
+    const textarea = document.getElementById("names");
+    const countElem = document.getElementById("count");
+    const demoBtn = document.getElementById("demoBtn");
+    const drawBtn = document.getElementById("drawBtn");
+    const messageElem = document.getElementById("message");
+    const linkSection = document.getElementById("linkSection");
+    const linkList = document.getElementById("linkList");
+
+    function getNames() {
+      return textarea.value
+        .split("\n")
+        .map(n => n.trim())
+        .filter(n => n.length > 0);
+    }
+
+    function updateCount() {
+      const names = getNames();
+      countElem.textContent = `目前 ${names.length} 人參加`;
+    }
+
+    textarea && textarea.addEventListener("input", updateCount);
+
+    demoBtn && demoBtn.addEventListener("click", () => {
+      textarea.value = "曼曼\n泰英\n芮\n彣\n冠\n昕";
+      updateCount();
+      messageElem.textContent = "已填入示範名單，可以直接按「抽籤並產生專屬網址」囉！";
+      messageElem.classList.remove("error");
+    });
+
+    drawBtn && drawBtn.addEventListener("click", () => {
+      const names = getNames();
+      messageElem.textContent = "";
+      messageElem.classList.remove("error");
+      linkSection.style.display = "none";
+      linkList.innerHTML = "";
+
+      if (names.length < 2) {
+        messageElem.textContent = "至少需要 2 個人才能抽籤喔！";
+        messageElem.classList.add("error");
+        return;
+      }
+
+      const set = new Set(names);
+      if (set.size !== names.length) {
+        messageElem.textContent = "名字不能重複，請確認每個人只出現一次～";
+        messageElem.classList.add("error");
+        return;
+      }
+
+      const n = names.length;
+      const der = makeDerangement(n);
+      if (!der) {
+        messageElem.textContent = "發生了一點小問題，請再試一次。";
+        messageElem.classList.add("error");
+        return;
+      }
+
+      const config = { names, mapping: der };
+      const token = encodeConfig(config);
+      const baseUrl = location.href.split("#")[0];
+
+      for (let i = 0; i < n; i++) {
+        const name = names[i];
+        const url = `${baseUrl}#token=${encodeURIComponent(token)}&id=${i}`;
+
+        const li = document.createElement("li");
+        li.className = "link-item";
+
+        const nameSpan = document.createElement("div");
+        nameSpan.className = "link-name";
+        nameSpan.textContent = `給「${name}」的專屬網址：`;
+
+        const urlSpan = document.createElement("div");
+        urlSpan.className = "link-url";
+        urlSpan.textContent = url;
+
+        li.appendChild(nameSpan);
+        li.appendChild(urlSpan);
+        linkList.appendChild(li);
+      }
+
+      linkSection.style.display = "block";
+      messageElem.textContent = "已經產生完成！把對應網址一一貼給大家就好，拜託大家不要偷看別人的連結 😆";
+    });
+
+    function setupParticipantView(token, idStr) {
+      let id = parseInt(idStr, 10);
+      if (Number.isNaN(id)) {
+        participantContent.innerHTML = "<p>連結有點問題，請再確認一次網址～</p>";
+        return;
+      }
+
+      try {
+        const config = decodeConfig(token);
+        const { names, mapping } = config;
+        if (!Array.isArray(names) || !Array.isArray(mapping)) {
+          throw new Error("bad config");
+        }
+        if (id < 0 || id >= names.length) {
+          participantContent.innerHTML = "<p>找不到對應的參加者，可能連結輸入錯囉。</p>";
+          return;
+        }
+
+        const selfName = names[id];
+        const targetName = names[mapping[id]];
+
+        participantContent.innerHTML = `
+          <p>嗨，</p>
+          <div class="big-name">${selfName}</div>
+          <div class="target-box">
+            <div class="target-title">你這次聖誕交換禮物要送給：</div>
+            <div class="target-name">${targetName}</div>
+          </div>
+          <p class="note">
+            🎄 請把這個對象記好，不要告訴別人，也不要偷看別人的連結～<br/>
+            🎁 好好幫他準備一份驚喜禮物吧！
+          </p>
+        `;
+      } catch (e) {
+        participantContent.innerHTML = "<p>連結內容解析失敗，請請主辦人重新產生一次連結。</p>";
+      }
+    }
+
+    // 初始化：判斷是主辦人模式還是參加者模式
+    (function init() {
+      const hashData = parseHash();
+      if (hashData && hashData.token) {
+        // 參加者模式
+        adminView.style.display = "none";
+        participantView.style.display = "block";
+        setupParticipantView(hashData.token, hashData.id);
+      } else {
+        // 主辦人模式
+        adminView.style.display = "block";
+        participantView.style.display = "none";
+        updateCount();
+      }
+    })();
+  </script>
+</body>
+</html>
